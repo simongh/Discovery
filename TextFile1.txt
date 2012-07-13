@@ -1,0 +1,28 @@
+M-SEARCH * HTTP/1.1  <- * = request uri
+S: uuid:ijklmnop-7dec-11d0-a765-00a0c91e6bf6 
+Host: 239.255.255.250:reservedSSDPport 
+Man: "ssdp:discover" 
+ST: ge:fridge  <-- service type MUST
+MX: 3 <- delay response
+
+HTTP/1.1 200 OK 
+S: uuid:ijklmnop-7dec-11d0-a765-00a0c91e6bf6 
+Ext: 
+Cache-Control: no-cache="Ext", max-age = 5000  <- should also (expires)
+ST: ge:fridge  <- MUST
+USN: uuid:abcdefgh-7dec-11d0-a765-00a0c91e6bf6  <- MUST
+AL: <blender:ixl><http://foo/bar> <- location should (also Location)
+
+NOTIFY * HTTP/1.1 
+Host: 239.255.255.250:reservedSSDPport 
+NT: blenderassociation:blender  <- MUST service type
+NTS: ssdp:alive 
+USN: someunique:idscheme3  <- MUST
+AL: <blender:ixl><http://foo/bar>  <- SHOULD also location
+Cache-Control: max-age = 7393 <- SHOULD also expires
+
+NOTIFY * HTTP/1.1 
+Host: 239.255.255.250:reservedSSDPport 
+NT: someunique:idscheme3  <- MUST service type
+NTS: ssdp:byebye 
+USN: someunique:idscheme3  <- MUST
