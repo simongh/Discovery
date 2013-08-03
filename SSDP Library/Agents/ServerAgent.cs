@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Discovery.SSDP.Agents
 {
 	/// <summary>
 	/// Handles server discovery activity 
 	/// </summary>
-	public class ServerAgent : AgentBase, IServerAgent
+	public class ServerAgent : AgentBase
 	{
 		/// <summary>
 		/// Indicates a discovery message has been received

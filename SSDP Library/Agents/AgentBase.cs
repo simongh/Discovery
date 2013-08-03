@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Collections.Generic;
 
 namespace Discovery.SSDP.Agents
 {
@@ -76,7 +76,7 @@ namespace Discovery.SSDP.Agents
 			set;
 		}
 
-		public short Ttl
+		public int Ttl
 		{
 			get;
 			set;
@@ -85,10 +85,11 @@ namespace Discovery.SSDP.Agents
 		public AgentBase()
 		{
 			Parser = new MessageParser();
-			MessageCount = 3;
-			DiscoveryAddress = IPAddress.Parse("239.255.255.250");
-			Port = 1900;
-			Ttl = 4;
+			var config = ConfigSection.Instance;
+			MessageCount = config == null ? 3 : config.MessageCount;
+			DiscoveryAddress = IPAddress.Parse(config==null ? "239.255.255.250" : config.Address);
+			Port = config == null ? 1900 : config.Port;
+			Ttl = config == null ? 4 : config.Ttl;
 		}
 
 		#region IDispose
@@ -134,8 +135,14 @@ namespace Discovery.SSDP.Agents
 			if (IsListening)
 				throw new ApplicationException("Already listening");
 
+			if (_Listener != null)
+			{
+				_Listener.Close();
+				_Listener = null;
+			}
+
 			_Listener = new UdpClient(Port);
-			_Listener.Ttl = Ttl;
+			_Listener.Ttl = (short)Ttl;
 			_Listener.JoinMulticastGroup(DiscoveryAddress);
 
 			_Listener.BeginReceive(new AsyncCallback(ReceiveCallback), new UdpState(_Listener));
@@ -236,12 +243,12 @@ namespace Discovery.SSDP.Agents
 		//        _Listener = new UdpClient(Port);
 		//}
 
-		internal void Send(Messages.MessageBase message, IPEndPoint endpoint)
+		public void Send(Messages.MessageBase message, IPEndPoint endpoint)
 		{
 			Send(new Messages.MessageBase[] { message }, endpoint);
 		}
 
-		internal void Send(IEnumerable<Messages.MessageBase> messages, IPEndPoint endpoint)
+		public void Send(IEnumerable<Messages.MessageBase> messages, IPEndPoint endpoint)
 		{
 			UdpClient client = new UdpClient();
 
@@ -249,6 +256,9 @@ namespace Discovery.SSDP.Agents
 
 			foreach (var item in messages)
 			{
+				item.Host = DiscoveryAddress.ToString();
+				item.Port = Port;
+
 				buffer = item.ToArray();
 				for (int i = 0; i < MessageCount; i++)
 				{

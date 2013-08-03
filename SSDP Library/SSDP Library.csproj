@@ -33,12 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agents\AgentBase.cs" />
-    <Compile Include="Agents\IServerAgent.cs" />
+    <Compile Include="ConfigSection.cs" />
     <Compile Include="Events\AnnounceEventArgs.cs" />
     <Compile Include="Events\ByeReceivedEventArgs.cs" />
     <Compile Include="Events\DiscoveryReceivedEventArgs.cs" />

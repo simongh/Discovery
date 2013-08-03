@@ -1,16 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Windows.Forms;
 
 namespace ServerTest
 {
 	class Program
 	{
+		[STAThread]
 		static void Main(string[] args)
 		{
-			Console.WriteLine("server");
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
+		}
 
+		static void Runner()
+		{
+			Console.WriteLine("server");
 			var sa = new Discovery.SSDP.Agents.ServerAgent();
 			sa.SearchReceived += new EventHandler<Discovery.SSDP.Events.SearchReceivedEventArgs>(sa_SearchReceived);
 			

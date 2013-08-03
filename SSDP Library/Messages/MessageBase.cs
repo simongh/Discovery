@@ -4,7 +4,7 @@ namespace Discovery.SSDP.Messages
     /// <summary>
     /// Base class for messages
     /// </summary>
-    internal abstract class MessageBase
+    public abstract class MessageBase
     {
         /// <summary>
         /// Gets or sets the service forthe message

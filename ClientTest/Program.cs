@@ -1,19 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Sockets;
-using System.Net;
+using System.Text;
+using System.Windows.Forms;
 
 namespace ClientTest
 {
 	class Program
 	{
+		[STAThread]
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Client");
-			ping2();
-			Console.ReadLine();
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
+
+	//		Console.WriteLine("Client");
+	//		ping2();
+	//		Console.ReadLine();
 		}
 
 		private static void ping2()

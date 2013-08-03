@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Collections.Generic;
 
 namespace Discovery.SSDP.Agents
 {
@@ -50,8 +50,10 @@ namespace Discovery.SSDP.Agents
 		public ClientAgent()
 			: base()
 		{
-			DiscoveryTimeout = new TimeSpan(0, 0, 20);
-			MaxWaitTime = 3;
+			var config = ConfigSection.Instance;
+
+			DiscoveryTimeout = config == null ? new TimeSpan(0, 0, 20) : config.DiscoveryTimeout;
+			MaxWaitTime = config == null ? 3 : config.MaxWaitTime;
 		}
 
 		protected override void HandleMessage(object message, IPEndPoint sender)

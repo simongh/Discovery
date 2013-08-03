@@ -28,7 +28,7 @@ namespace Discovery.SSDP.Messages
 			StringBuilder sb = new StringBuilder();
 
 			sb.Append("NOTIFY * HTTP/1.1\r\n");
-			sb.AppendFormat("{0}: {1}:{2}", Discovery.SSDP.Headers.Host, Host, Port);
+			sb.AppendFormat("{0}: {1}:{2}\r\n", Discovery.SSDP.Headers.Host, Host, Port);
 			sb.AppendFormat("{0}: {1}\r\n", Discovery.SSDP.Headers.NotifiedServiceType, Service.ServiceType);
 			sb.Append("NTS: ssdp:alive\r\n");
 			sb.AppendFormat("{0}: {1}\r\n", Discovery.SSDP.Headers.ServiceName, Service.UniqueServiceName);
