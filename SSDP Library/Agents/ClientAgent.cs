@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 
 namespace Discovery.SSDP.Agents
 {
@@ -16,6 +17,8 @@ namespace Discovery.SSDP.Agents
 		public event EventHandler<Events.ByeReceivedEventArgs> ByeReceived;
 		public event EventHandler<Events.AnnounceEventArgs> AnnounceReceived;
 		public event EventHandler DiscoveryReceived;
+
+		private delegate IList<Service> DiscoverDelegate(string serviceType);
 
 		public TimeSpan DiscoveryTimeout
 		{
@@ -137,6 +140,18 @@ namespace Discovery.SSDP.Agents
 			}
 			
 			return result;
+		}
+
+		public IAsyncResult BeginDiscover(string serviceType, AsyncCallback callback, object state)
+		{
+			DiscoverDelegate discover = Discover;
+			return discover.BeginInvoke(serviceType, callback, state);
+		}
+
+		public IList<Service> EndDiscover(IAsyncResult asyncResult)
+		{
+			var discover = (DiscoverDelegate)((AsyncResult)asyncResult).AsyncDelegate;
+			return discover.EndInvoke(asyncResult);
 		}
 	}
 }

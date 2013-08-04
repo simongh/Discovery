@@ -16,6 +16,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.txtServiceType = new System.Windows.Forms.TextBox();
 			this.lblServiceType = new System.Windows.Forms.Label();
 			this.btnDiscover = new System.Windows.Forms.Button();
@@ -25,6 +26,7 @@
 			this.lblResults = new System.Windows.Forms.Label();
 			this.txtResults = new System.Windows.Forms.TextBox();
 			this.pbThinking = new System.Windows.Forms.ProgressBar();
+			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.gbListen.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -118,8 +120,14 @@
 			this.pbThinking.Location = new System.Drawing.Point(16, 55);
 			this.pbThinking.Name = "pbThinking";
 			this.pbThinking.Size = new System.Drawing.Size(350, 13);
+			this.pbThinking.Step = 1;
 			this.pbThinking.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.pbThinking.TabIndex = 6;
+			// 
+			// timer
+			// 
+			this.timer.Interval = 1000;
+			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// MainForm
 			// 
@@ -153,5 +161,6 @@
 		private System.Windows.Forms.Label lblResults;
 		private System.Windows.Forms.TextBox txtResults;
 		private System.Windows.Forms.ProgressBar pbThinking;
+		private System.Windows.Forms.Timer timer;
 	}
 }
