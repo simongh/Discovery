@@ -16,7 +16,7 @@ namespace Discovery.SSDP.Agents
 
 		public event EventHandler<Events.ByeReceivedEventArgs> ByeReceived;
 		public event EventHandler<Events.AnnounceEventArgs> AnnounceReceived;
-		public event EventHandler DiscoveryReceived;
+		public event EventHandler<Events.DiscoveryReceivedEventArgs> DiscoveryReceived;
 
 		private delegate IList<Service> DiscoverDelegate(string serviceType);
 
@@ -64,6 +64,9 @@ namespace Discovery.SSDP.Agents
 			var msg = message as Messages.MessageBase;
 			if (msg == null)
 				return;
+
+			msg.Host = sender.Address.ToString();
+			msg.Port = sender.Port;
 
 			if (msg is Messages.ByeMessage)
 				OnByeReceived(new Events.ByeReceivedEventArgs((Messages.ByeMessage)msg));
@@ -134,8 +137,13 @@ namespace Discovery.SSDP.Agents
 					}
 
 					var response = Parser.Parse(buffer);
-					if (response != null && response is Messages.DiscoveryResponseMessage && !result.Contains(response.Service))
-						result.Add(response.Service);
+					if (response != null && response is Messages.DiscoveryResponseMessage)
+					{
+						HandleMessage(response, e);
+
+						if (!result.Contains(response.Service))
+							result.Add(response.Service);
+					}
 				}
 			}
 			

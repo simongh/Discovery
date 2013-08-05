@@ -43,6 +43,9 @@ namespace Discovery.SSDP.Agents
 			if (msg == null)
 				return;
 
+			msg.Host = sender.Address.ToString();
+			msg.Port = sender.Port;
+
 			if (msg is Messages.DiscoveryMessage && Services.FirstOrDefault(x => x.ServiceType == msg.Service.ServiceType) != null)
 				OnSearchReceived(new Events.SearchReceivedEventArgs((Messages.DiscoveryMessage)msg, sender));
 		}

@@ -161,6 +161,7 @@ namespace Discovery.SSDP.Agents
 
 			var ep = new IPEndPoint(IPAddress.Any, 0);
 			_Listener.DropMulticastGroup(DiscoveryAddress);
+			_Listener.Close();
 		}
 
 		/// <summary>

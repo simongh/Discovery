@@ -27,20 +27,34 @@ namespace ServerTest
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			_agent = new Discovery.SSDP.Agents.ServerAgent();
-			_agent.Port = 19000;
 
 			_agent.SearchReceived += _agent_SearchReceived;
+			_agent.SearchResponding += _agent_SearchResponding;
+			_agent.SearchResponded += _agent_SearchResponded;
+		}
+
+		void _agent_SearchResponded(object sender, EventArgs e)
+		{
+			if (this.InvokeRequired)
+				Invoke((MethodInvoker)delegate { _agent_SearchResponded(sender, e); });
+			else
+				txtResults.Text = "done responding: \r\n" + txtResults.Text;
+		}
+
+		void _agent_SearchResponding(object sender, Discovery.SSDP.Events.SearchRespondingEventArgs e)
+		{
+			if (this.InvokeRequired)
+				Invoke((MethodInvoker)delegate { _agent_SearchResponding(sender, e); });
+			else
+				txtResults.Text = "responding to: " + e.Recipient + "\r\n" + txtResults.Text;
 		}
 
 		void _agent_SearchReceived(object sender, Discovery.SSDP.Events.SearchReceivedEventArgs e)
 		{
 			if (this.InvokeRequired)
-			{
-				Invoke((MethodInvoker)delegate
-				{
-					txtResults.Text = "received: " + e.ServiceType + " from " + e.Sender + "\r\n" + txtResults.Text;
-				});
-			}
+				Invoke((MethodInvoker)delegate { _agent_SearchReceived(sender, e); });
+			else
+				txtResults.Text = "received: " + e.ServiceType + " from " + e.Sender + "\r\n" + txtResults.Text;
 		}
 
 		private void lbServices_SelectedIndexChanged(object sender, EventArgs e)

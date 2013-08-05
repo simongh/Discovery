@@ -53,33 +53,41 @@ namespace ClientTest
 		{
 			if (InvokeRequired)
 			{
-				Invoke((MethodInvoker)delegate
-				{
-					var s = _Client.EndDiscover(ar);
-					if (s.Any())
-						txtResults.Lines = s.Select(x => x.ServiceType + " - " + x.Location).ToArray();
-					else
-						txtResults.Text = "Not found";
+				Invoke((MethodInvoker)delegate { Discovered(ar); });
+			}
+			else
+			{
+				var s = _Client.EndDiscover(ar);
+				if (s.Any())
+					txtResults.Lines = s.Select(x => x.ServiceType + " - " + x.Location).ToArray();
+				else
+					txtResults.Text = "Not found";
 
-					timer.Stop();
-					pbThinking.Value = 0;
-					//pbThinking.Style = ProgressBarStyle.Continuous;
-					//pbThinking.MarqueeAnimationSpeed = 0;
+				timer.Stop();
+				pbThinking.Value = 0;
+				//pbThinking.Style = ProgressBarStyle.Continuous;
+				//pbThinking.MarqueeAnimationSpeed = 0;
 
-					btnDiscover.Enabled = true;
-					btnStart.Enabled = true;
-
-				});
+				btnDiscover.Enabled = true;
+				btnStart.Enabled = true;
 			}
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			_Client = new Discovery.SSDP.Agents.ClientAgent();
-			_Client.Port = 19000;
 
 			_Client.AnnounceReceived += _Client_AnnounceReceived;
 			_Client.ByeReceived += _Client_ByeReceived;
+			_Client.DiscoveryReceived += _Client_DiscoveryReceived;
+		}
+
+		void _Client_DiscoveryReceived(object sender, Discovery.SSDP.Events.DiscoveryReceivedEventArgs e)
+		{
+			if (InvokeRequired)
+				Invoke((MethodInvoker)delegate { _Client_DiscoveryReceived(sender, e); });
+			else
+				txtResults.Text = string.Format("discovered: {0} - {1}\r\n{2}", e.Service.ServiceType, e.Service.Location, txtResults.Text);
 		}
 
 		void _Client_ByeReceived(object sender, Discovery.SSDP.Events.ByeReceivedEventArgs e)
@@ -87,16 +95,22 @@ namespace ClientTest
 			if (InvokeRequired)
 				Invoke((MethodInvoker)delegate
 				{
-					txtResults.Text = "bye: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
+					_Client_ByeReceived(sender, e);
 				});
+			else
+					txtResults.Text = "bye: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
+
 		}
 
 		void _Client_AnnounceReceived(object sender, Discovery.SSDP.Events.AnnounceEventArgs e)
 		{
 			if (InvokeRequired)
-				Invoke((MethodInvoker)delegate {
-					txtResults.Text = "announced: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
+				Invoke((MethodInvoker)delegate
+				{
+					_Client_AnnounceReceived(sender, e);
 				});
+			else
+				txtResults.Text = "announced: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
 		}
 
 		private void btnStart_Click(object sender, EventArgs e)
