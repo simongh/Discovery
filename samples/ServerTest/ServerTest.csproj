@@ -59,15 +59,15 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SSDP Library\SSDP Library.csproj">
-      <Project>{D66ED8BF-30E1-4F15-87B6-8DD6E0E64B1F}</Project>
-      <Name>SSDP Library</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SSDP Library\SSDP Library.csproj">
+      <Project>{d66ed8bf-30e1-4f15-87b6-8dd6e0e64b1f}</Project>
+      <Name>SSDP Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

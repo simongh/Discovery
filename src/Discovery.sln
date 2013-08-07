@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSDP Library", "SSDP Library\SSDP Library.csproj", "{D66ED8BF-30E1-4F15-87B6-8DD6E0E64B1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientTest", "ClientTest\ClientTest.csproj", "{BAA92513-094E-48D6-BFE1-39D030341960}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientTest", "..\samples\ClientTest\ClientTest.csproj", "{BAA92513-094E-48D6-BFE1-39D030341960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTest", "ServerTest\ServerTest.csproj", "{0CD1E71E-B3B9-4804-BF42-60138925A3FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTest", "..\samples\ServerTest\ServerTest.csproj", "{0CD1E71E-B3B9-4804-BF42-60138925A3FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
