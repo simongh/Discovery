@@ -5,6 +5,8 @@ Discovery library for .Net
 
 This project does UPNP style discovery. Included in the samples is a client & server. Both the client & server both support passive & active discovery. Both are multi-threaded.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/0q6ulxammuawn3un)](https://ci.appveyor.com/project/SimonHalsey/discovery)
+
 Client Agent
 ------
 The client agent discovers services. It searches for a particular service type, eg `ge:fridge`. It then waits for any responses. It is also capable of passive discovery, where it listens for service announcements.
