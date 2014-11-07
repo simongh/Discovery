@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>ssdp</id>
-		<version>1.0.1</version>
+		<version>$version$</version>
 		<authors>Simon Halsey</authors>
 		<owners>Simon Halsey</owners>
 		<licenseUrl>https://github.com/simongh/Discovery/blob/master/LICENSE.md</licenseUrl>
