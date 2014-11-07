@@ -15,16 +15,14 @@ namespace Discovery.SSDP.Agents
 		private int _MaxWaitTime;
 
 		public event EventHandler<Events.ByeReceivedEventArgs> ByeReceived;
+
 		public event EventHandler<Events.AnnounceEventArgs> AnnounceReceived;
+
 		public event EventHandler<Events.DiscoveryReceivedEventArgs> DiscoveryReceived;
 
 		private delegate IList<Service> DiscoverDelegate(string serviceType);
 
-		public TimeSpan DiscoveryTimeout
-		{
-			get;
-			set;
-		}
+		public TimeSpan DiscoveryTimeout { get; set; }
 
 		public int MinDiscoveryCount
 		{
@@ -146,7 +144,7 @@ namespace Discovery.SSDP.Agents
 					}
 				}
 			}
-			
+
 			return result;
 		}
 

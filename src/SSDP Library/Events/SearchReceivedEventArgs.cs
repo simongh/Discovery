@@ -10,35 +10,19 @@ namespace Discovery.SSDP.Events
 		/// <summary>
 		/// Gets the body of the search request
 		/// </summary>
-		public string ReceivedContent
-		{
-			get;
-			private set;
-		}
+		public string ReceivedContent { get; private set; }
 
 		/// <summary>
 		/// Gets the service type being searched for
 		/// </summary>
-		public string ServiceType
-		{
-			get;
-			private set;
-		}
+		public string ServiceType { get; private set; }
 
 		/// <summary>
 		/// Gets the senders end point
 		/// </summary>
-		public System.Net.IPEndPoint Sender
-		{
-			get;
-			private set;
-		}
+		public System.Net.IPEndPoint Sender { get; private set; }
 
-		public int MaxWaitTime
-		{
-			get;
-			private set;
-		}
+		public int MaxWaitTime { get; private set; }
 
 		internal SearchReceivedEventArgs(Messages.DiscoveryMessage message, System.Net.IPEndPoint sender)
 		{

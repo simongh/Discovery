@@ -24,7 +24,7 @@ namespace Discovery.SSDP.Messages
 			sb.AppendFormat("{0}: {1}:{2}\r\n", Discovery.SSDP.Headers.Host, Host, Port);
 			sb.AppendFormat("{0}: {1}\r\n", Discovery.SSDP.Headers.NotifiedServiceType, Service.ServiceType);
 			sb.Append("NTS: ssdp:byebye\r\n");
-			sb.AppendFormat("{0}: {1}\r\n",Discovery.SSDP.Headers.ServiceName, Service.UniqueServiceName);
+			sb.AppendFormat("{0}: {1}\r\n", Discovery.SSDP.Headers.ServiceName, Service.UniqueServiceName);
 			sb.Append("\r\n");
 
 			return Encoding.UTF8.GetBytes(sb.ToString());

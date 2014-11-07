@@ -82,7 +82,7 @@ namespace ClientTest
 			_Client.DiscoveryReceived += _Client_DiscoveryReceived;
 		}
 
-		void _Client_DiscoveryReceived(object sender, Discovery.SSDP.Events.DiscoveryReceivedEventArgs e)
+		private void _Client_DiscoveryReceived(object sender, Discovery.SSDP.Events.DiscoveryReceivedEventArgs e)
 		{
 			if (InvokeRequired)
 				Invoke((MethodInvoker)delegate { _Client_DiscoveryReceived(sender, e); });
@@ -90,7 +90,7 @@ namespace ClientTest
 				txtResults.Text = string.Format("discovered: {0} - {1}\r\n{2}", e.Service.ServiceType, e.Service.Location, txtResults.Text);
 		}
 
-		void _Client_ByeReceived(object sender, Discovery.SSDP.Events.ByeReceivedEventArgs e)
+		private void _Client_ByeReceived(object sender, Discovery.SSDP.Events.ByeReceivedEventArgs e)
 		{
 			if (InvokeRequired)
 				Invoke((MethodInvoker)delegate
@@ -98,11 +98,10 @@ namespace ClientTest
 					_Client_ByeReceived(sender, e);
 				});
 			else
-					txtResults.Text = "bye: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
-
+				txtResults.Text = "bye: " + e.Service.ServiceType + "\r\n" + txtResults.Text;
 		}
 
-		void _Client_AnnounceReceived(object sender, Discovery.SSDP.Events.AnnounceEventArgs e)
+		private void _Client_AnnounceReceived(object sender, Discovery.SSDP.Events.AnnounceEventArgs e)
 		{
 			if (InvokeRequired)
 				Invoke((MethodInvoker)delegate

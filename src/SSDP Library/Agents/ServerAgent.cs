@@ -5,7 +5,7 @@ using System.Net;
 namespace Discovery.SSDP.Agents
 {
 	/// <summary>
-	/// Handles server discovery activity 
+	/// Handles server discovery activity
 	/// </summary>
 	public class ServerAgent : AgentBase
 	{
@@ -13,10 +13,12 @@ namespace Discovery.SSDP.Agents
 		/// Indicates a discovery message has been received
 		/// </summary>
 		public event EventHandler<Events.SearchReceivedEventArgs> SearchReceived;
+
 		/// <summary>
 		/// Indicates a discovery response is being sent
 		/// </summary>
 		public event EventHandler<Events.SearchRespondingEventArgs> SearchResponding;
+
 		/// <summary>
 		/// Indicates a discovery response was sent
 		/// </summary>
@@ -25,11 +27,7 @@ namespace Discovery.SSDP.Agents
 		/// <summary>
 		/// Gets the services being advertised
 		/// </summary>
-		public ServiceCollection Services
-		{
-			get;
-			private set;
-		}
+		public ServiceCollection Services { get; private set; }
 
 		public ServerAgent()
 			: base()

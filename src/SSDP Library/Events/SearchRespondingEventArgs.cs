@@ -10,20 +10,12 @@ namespace Discovery.SSDP.Events
 		/// <summary>
 		/// Gets or sets any body content
 		/// </summary>
-		public string Content
-		{
-			get;
-			set;
-		}
+		public string Content { get; set; }
 
 		/// <summary>
 		/// Gets the recipient end point
 		/// </summary>
-		public System.Net.IPEndPoint Recipient
-		{
-			get;
-			private set;
-		}
+		public System.Net.IPEndPoint Recipient { get; private set; }
 
 		public SearchRespondingEventArgs(string content, System.Net.IPEndPoint recipient)
 		{

@@ -12,6 +12,7 @@ namespace ServerTest
 			InitializeComponent();
 		}
 
+		//Start listening  for service requests
 		private void btnStart_Click(object sender, EventArgs e)
 		{
 			btnStart.Enabled = false;
@@ -33,7 +34,7 @@ namespace ServerTest
 			_agent.SearchResponded += _agent_SearchResponded;
 		}
 
-		void _agent_SearchResponded(object sender, EventArgs e)
+		private void _agent_SearchResponded(object sender, EventArgs e)
 		{
 			if (this.InvokeRequired)
 				Invoke((MethodInvoker)delegate { _agent_SearchResponded(sender, e); });
@@ -41,7 +42,7 @@ namespace ServerTest
 				txtResults.Text = "done responding: \r\n" + txtResults.Text;
 		}
 
-		void _agent_SearchResponding(object sender, Discovery.SSDP.Events.SearchRespondingEventArgs e)
+		private void _agent_SearchResponding(object sender, Discovery.SSDP.Events.SearchRespondingEventArgs e)
 		{
 			if (this.InvokeRequired)
 				Invoke((MethodInvoker)delegate { _agent_SearchResponding(sender, e); });
@@ -49,7 +50,7 @@ namespace ServerTest
 				txtResults.Text = "responding to: " + e.Recipient + "\r\n" + txtResults.Text;
 		}
 
-		void _agent_SearchReceived(object sender, Discovery.SSDP.Events.SearchReceivedEventArgs e)
+		private void _agent_SearchReceived(object sender, Discovery.SSDP.Events.SearchReceivedEventArgs e)
 		{
 			if (this.InvokeRequired)
 				Invoke((MethodInvoker)delegate { _agent_SearchReceived(sender, e); });

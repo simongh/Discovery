@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Discovery.SSDP
 {
@@ -14,18 +13,12 @@ namespace Discovery.SSDP
 		/// <summary>
 		/// Gets the sender endpoint
 		/// </summary>
-		public IPEndPoint EndPoint
-		{
-			get { return _EndPoint; }
-		}
+		public IPEndPoint EndPoint { get { return _EndPoint; } }
 
 		/// <summary>
 		/// Gets the data received
 		/// </summary>
-		public byte[] Data
-		{
-			get { return _Data; }
-		}
+		public byte[] Data { get { return _Data; } }
 
 		public TaskInfo(IPEndPoint endPoint, byte[] data)
 		{

@@ -10,38 +10,22 @@ namespace Discovery.SSDP
 		/// <summary>
 		/// Gets or sets a unique name for the service
 		/// </summary>
-		public string UniqueServiceName
-		{
-			get;
-			set;
-		}
+		public string UniqueServiceName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the location of the service
 		/// </summary>
-		public string Location
-		{
-			get;
-			set;
-		}
+		public string Location { get; set; }
 
 		/// <summary>
 		/// Gets or sets the service type
 		/// </summary>
-		public string ServiceType
-		{
-			get;
-			set;
-		}
+		public string ServiceType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the length of time the service registration is valid for
 		/// </summary>
-		public TimeSpan Expiry
-		{
-			get;
-			set;
-		}
+		public TimeSpan Expiry { get; set; }
 
 		public bool Equals(Service other)
 		{
@@ -60,5 +44,4 @@ namespace Discovery.SSDP
 			return true;
 		}
 	}
-
 }

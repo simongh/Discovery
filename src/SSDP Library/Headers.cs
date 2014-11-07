@@ -1,5 +1,4 @@
-﻿
-namespace Discovery.SSDP
+﻿namespace Discovery.SSDP
 {
 	public static class Headers
 	{

@@ -45,7 +45,7 @@ namespace Discovery.SSDP
 			if (!GetServiceName(msg, lines))
 				return null;
 
-			if (!GetServiceType(msg,Headers.ServiceType,lines))
+			if (!GetServiceType(msg, Headers.ServiceType, lines))
 				return null;
 
 			tmp = GetValue(lines, "ext");
@@ -215,7 +215,6 @@ namespace Discovery.SSDP
 			}
 			else
 				message.Host = tmp;
-
 		}
 
 		private bool GetServiceName(Messages.MessageBase message, List<string> lines)
@@ -223,7 +222,7 @@ namespace Discovery.SSDP
 			string tmp = GetValue(lines, Headers.ServiceName);
 			if (string.IsNullOrEmpty(tmp))
 				return false;
-			
+
 			message.Service.UniqueServiceName = tmp;
 			return true;
 		}

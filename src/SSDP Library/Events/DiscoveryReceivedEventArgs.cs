@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 
 namespace Discovery.SSDP.Events
@@ -11,17 +8,9 @@ namespace Discovery.SSDP.Events
 		/// <summary>
 		/// Gets the senders end point
 		/// </summary>
-		public System.Net.IPEndPoint Sender
-		{
-			get;
-			private set;
-		}
+		public System.Net.IPEndPoint Sender { get; private set; }
 
-		public Service Service
-		{
-			get;
-			private set;
-		}
+		public Service Service { get; private set; }
 
 		internal DiscoveryReceivedEventArgs(Messages.DiscoveryResponseMessage message)
 		{

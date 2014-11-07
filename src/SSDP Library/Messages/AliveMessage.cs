@@ -8,7 +8,6 @@ namespace Discovery.SSDP.Messages
 	/// </summary>
 	internal class AliveMessage : MessageBase
 	{
-
 		public AliveMessage(Service service)
 		{
 			Service = service;

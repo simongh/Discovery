@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>ssdp</id>
+		<version>1.0.0</version>
+		<authors>Simon Halsey</authors>
+		<owners>Simon Halsey</owners>
+		<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+		<projectUrl>https://github.com/simongh/Discovery</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Library to allow SSDP based discovery of services</description>
+		<releaseNotes>Initial release.</releaseNotes>
+		<copyright>Copyright Simon Halsey 2014</copyright>
+		<tags>networking ssdp discovery soa</tags>
+	</metadata>
+</package>

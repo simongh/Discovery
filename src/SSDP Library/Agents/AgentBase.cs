@@ -37,57 +37,33 @@ namespace Discovery.SSDP.Agents
 		/// <summary>
 		/// Gets or sets the multicast address to use to communicate
 		/// </summary>
-		public IPAddress DiscoveryAddress
-		{
-			get;
-			set;
-		}
+		public IPAddress DiscoveryAddress { get; set; }
 
 		/// <summary>
 		/// Gets or sets the port to use to communicate
 		/// </summary>
-		public int Port
-		{
-			get;
-			set;
-		}
+		public int Port { get; set; }
 
 		/// <summary>
 		/// Gets whether the agent is actively listening for messages
 		/// </summary>
-		public bool IsListening
-		{
-			get;
-			private set;
-		}
+		public bool IsListening { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the optional body for messages
 		/// </summary>
-		public string Content
-		{
-			get;
-			set;
-		}
+		public string Content { get; set; }
 
-		public int MessageCount
-		{
-			get;
-			set;
-		}
+		public int MessageCount { get; set; }
 
-		public int Ttl
-		{
-			get;
-			set;
-		}
+		public int Ttl { get; set; }
 
 		public AgentBase()
 		{
 			Parser = new MessageParser();
 			var config = ConfigSection.Instance;
 			MessageCount = config == null ? 3 : config.MessageCount;
-			DiscoveryAddress = IPAddress.Parse(config==null ? "239.255.255.250" : config.Address);
+			DiscoveryAddress = IPAddress.Parse(config == null ? "239.255.255.250" : config.Address);
 			Port = config == null ? 1900 : config.Port;
 			Ttl = config == null ? 4 : config.Ttl;
 		}
@@ -122,7 +98,7 @@ namespace Discovery.SSDP.Agents
 			Dispose(false);
 		}
 
-		#endregion
+		#endregion IDispose
 
 		/// <summary>
 		/// Starts listening for messages
@@ -229,8 +205,6 @@ namespace Discovery.SSDP.Agents
 		//    message.Port = Port;
 		//    message.Content = Content;
 
-			
-
 		//    var buffer = message.ToArray();
 		//    _Listener.Send(buffer, buffer.Length, endpoint);
 		//}
@@ -273,7 +247,5 @@ namespace Discovery.SSDP.Agents
 				}
 			}
 		}
-
-
 	}
 }
