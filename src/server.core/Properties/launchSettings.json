@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "server.core": {
+      "commandName": "Project",
+      "commandLineArgs": "active"
+    }
+  }
+}

@@ -4,10 +4,12 @@ namespace Discovery.Ssdp
 {
 	internal static class Guard
 	{
-		public static void NotNull(object value, string paramName)
+		public static T NotNull<T>(T value, string paramName)
 		{
 			if (value == null)
 				throw new ArgumentNullException(paramName);
+
+			return value;
 		}
 
 		public static void NotNullOrEmpty(string value, string paramName)

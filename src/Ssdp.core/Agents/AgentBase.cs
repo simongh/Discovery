@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +9,10 @@ namespace Discovery.Ssdp.Agents
 {
 	public abstract class AgentBase : IDisposable
 	{
-		private bool disposedValue;
+		private bool _disposedValue;
 		protected UdpClient _Listener;
 		internal MessageParser Parser;
+		private CancellationTokenSource _listenerToken;
 
 		/// <summary>
 		/// Gets or sets the multicast address to use to communicate
@@ -48,9 +47,14 @@ namespace Discovery.Ssdp.Agents
 			Ttl = 4;
 		}
 
+		~AgentBase()
+		{
+			Dispose(false);
+		}
+
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
@@ -58,16 +62,17 @@ namespace Discovery.Ssdp.Agents
 						_Listener.Dispose();
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 
 		public void Dispose()
 		{
+			GC.SuppressFinalize(this);
 			Dispose(true);
 		}
 
-		public async Task StartListener()
+		public Task StartListenerAsync()
 		{
 			Guard.NotNull(DiscoveryAddress, nameof(DiscoveryAddress));
 
@@ -85,13 +90,18 @@ namespace Discovery.Ssdp.Agents
 			_Listener.JoinMulticastGroup(DiscoveryAddress);
 
 			IsListening = true;
-			while (IsListening)
+			_listenerToken = new CancellationTokenSource();
+			return Task.Factory.StartNew(async () =>
 			{
-				var result = await _Listener.ReceiveAsync();
-				if (!IsListening)
-					break;
-				await ParseResponse(result);
-			}
+				while (IsListening)
+				{
+					var result = await _Listener.ReceiveAsync().ConfigureAwait(false);
+
+					if (!IsListening)
+						break;
+					await ParseResponseAsync(result);
+				}
+			}, _listenerToken.Token);
 		}
 
 		/// <summary>
@@ -103,6 +113,7 @@ namespace Discovery.Ssdp.Agents
 				return;
 
 			IsListening = false;
+			_listenerToken.Cancel();
 
 			var ep = new IPEndPoint(IPAddress.Any, 0);
 			_Listener.DropMulticastGroup(DiscoveryAddress);
@@ -110,27 +121,30 @@ namespace Discovery.Ssdp.Agents
 			_Listener = null;
 		}
 
-		protected async Task ParseResponse(UdpReceiveResult result)
+		protected Task ParseResponseAsync(UdpReceiveResult result)
 		{
 			if (result.Buffer == null || result.RemoteEndPoint == null)
-				return;
+				return Task.FromResult(0);
 
 			Messages.MessageBase msg = Parser.Parse(result.Buffer);
 			if (msg == null)
-				return;
+				return Task.FromResult(0);
 
-			await HandleMessage(msg, result.RemoteEndPoint);
+			return HandleMessageAsync(msg, result.RemoteEndPoint);
 		}
 
-		protected abstract Task HandleMessage(Messages.MessageBase message, IPEndPoint sender);
+		protected abstract Task HandleMessageAsync(Messages.MessageBase message, IPEndPoint sender);
 
-		public Task Send(Messages.MessageBase message, IPEndPoint endpoint)
+		public Task SendAsync(Messages.MessageBase message, IPEndPoint endpoint)
 		{
-			return Send(new Messages.MessageBase[] { message }, endpoint);
+			return SendAsync(new Messages.MessageBase[] { message }, endpoint);
 		}
 
-		public async Task Send(IEnumerable<Messages.MessageBase> messages, IPEndPoint endpoint)
+		public async Task SendAsync(IEnumerable<Messages.MessageBase> messages, IPEndPoint endpoint)
 		{
+			Guard.NotNull(messages, nameof(messages));
+			Guard.NotNull(endpoint, nameof(endpoint));
+
 			using (var client = new UdpClient())
 			{
 				foreach (var item in messages)
@@ -141,10 +155,26 @@ namespace Discovery.Ssdp.Agents
 					var buffer = item.ToArray();
 					for (int i = 0; i < MessageCount; i++)
 					{
-						await client.SendAsync(buffer, buffer.Length, endpoint);
+						await client.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(false);
 					}
 				}
 			}
+		}
+
+		protected async Task OnEventHandlerAsync<T>(Func<object, T, Task> handler, T e)
+		{
+			if (handler == null)
+				return;
+
+			var invocationList = handler.GetInvocationList();
+			var tasks = new List<Task>(invocationList.Length);
+
+			foreach (var item in invocationList)
+			{
+				tasks.Add(((Func<object, T, Task>)item)(this, e));
+			}
+
+			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
 	}
 }

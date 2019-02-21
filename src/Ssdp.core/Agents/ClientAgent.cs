@@ -11,11 +11,11 @@ namespace Discovery.Ssdp.Agents
 		private int _minDiscoveryCount;
 		private int _maxWaitTime;
 
-		public event EventHandler<Events.ByeReceivedEventArgs> ByeReceived;
+		public event Func<object, Events.ByeReceivedEventArgs, Task> ByeReceived;
 
-		public event EventHandler<Events.AnnounceEventArgs> AnnounceReceived;
+		public event Func<object, Events.AnnounceEventArgs, Task> AnnounceReceived;
 
-		public event EventHandler<Events.DiscoveryReceivedEventArgs> DiscoveryReceived;
+		public event Func<object, Events.DiscoveryReceivedEventArgs, Task> DiscoveryReceived;
 
 		public TimeSpan DiscoveryTimeout { get; set; }
 
@@ -50,45 +50,41 @@ namespace Discovery.Ssdp.Agents
 			MaxWaitTime = 3;
 		}
 
-		protected override async Task HandleMessage(Messages.MessageBase message, IPEndPoint sender)
+		protected override Task HandleMessageAsync(Messages.MessageBase message, IPEndPoint sender)
 		{
 			var msg = message as Messages.MessageBase;
 			if (msg == null)
-				return;
+				return Task.FromResult(0);
 
 			msg.Host = sender.Address.ToString();
 			msg.Port = sender.Port;
 
 			if (msg is Messages.ByeMessage)
-				await OnByeReceived(new Events.ByeReceivedEventArgs((Messages.ByeMessage)msg));
+				return OnByeReceivedAsync(new Events.ByeReceivedEventArgs((Messages.ByeMessage)msg));
 			else if (msg is Messages.AliveMessage)
-				await OnAnnounceReceived(new Events.AnnounceEventArgs((Messages.AliveMessage)msg));
+				return OnAnnounceReceivedAsync(new Events.AnnounceEventArgs((Messages.AliveMessage)msg));
 			else if (msg is Messages.DiscoveryResponseMessage)
-				await OnDiscoveryReceived(new Events.DiscoveryReceivedEventArgs((Messages.DiscoveryResponseMessage)msg));
+				return OnDiscoveryReceivedAsync(new Events.DiscoveryReceivedEventArgs((Messages.DiscoveryResponseMessage)msg));
+			else
+				return Task.FromResult(0);
 		}
 
-		protected virtual Task OnByeReceived(Events.ByeReceivedEventArgs e)
+		protected virtual Task OnByeReceivedAsync(Events.ByeReceivedEventArgs e)
 		{
-			ByeReceived?.Invoke(this, e);
-
-			return Task.FromResult(0);
+			return OnEventHandlerAsync(ByeReceived, e);
 		}
 
-		protected virtual Task OnAnnounceReceived(Events.AnnounceEventArgs e)
+		protected virtual Task OnAnnounceReceivedAsync(Events.AnnounceEventArgs e)
 		{
-			AnnounceReceived?.Invoke(this, e);
-
-			return Task.FromResult(0);
+			return OnEventHandlerAsync(AnnounceReceived, e);
 		}
 
-		protected virtual Task OnDiscoveryReceived(Events.DiscoveryReceivedEventArgs e)
+		protected virtual Task OnDiscoveryReceivedAsync(Events.DiscoveryReceivedEventArgs e)
 		{
-			DiscoveryReceived?.Invoke(this, e);
-
-			return Task.FromResult(0);
+			return OnEventHandlerAsync(DiscoveryReceived, e);
 		}
 
-		public async Task<IEnumerable<ServiceDescription>> Discover(string serviceType)
+		public async Task<IEnumerable<ServiceDescription>> DiscoverAsync(string serviceType)
 		{
 			Guard.NotNullOrEmpty(serviceType, nameof(serviceType));
 
@@ -104,7 +100,7 @@ namespace Discovery.Ssdp.Agents
 				var buffer = msg.ToArray();
 				for (int i = 0; i < MessageCount; i++)
 				{
-					await client.SendAsync(buffer, buffer.Length, new IPEndPoint(DiscoveryAddress, Port));
+					await client.SendAsync(buffer, buffer.Length, new IPEndPoint(DiscoveryAddress, Port)).ConfigureAwait(false);
 				}
 			}
 
@@ -117,7 +113,7 @@ namespace Discovery.Ssdp.Agents
 					UdpReceiveResult received;
 					try
 					{
-						received = await client.ReceiveAsync();
+						received = await client.ReceiveAsync().ConfigureAwait(false);
 					}
 					catch (SocketException ex)
 					{
@@ -133,7 +129,7 @@ namespace Discovery.Ssdp.Agents
 					var response = Parser.Parse(received.Buffer);
 					if (response != null && response is Messages.DiscoveryResponseMessage)
 					{
-						await HandleMessage(response, e);
+						await HandleMessageAsync(response, e).ConfigureAwait(false);
 
 						if (!result.Contains(response.Service))
 							result.Add(response.Service);

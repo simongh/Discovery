@@ -10,17 +10,17 @@ namespace Discovery.Ssdp.Agents
 		/// <summary>
 		/// Indicates a discovery message has been received
 		/// </summary>
-		public event EventHandler<Events.SearchReceivedEventArgs> SearchReceived;
+		public event Func<object, Events.SearchReceivedEventArgs, Task> SearchReceived;
 
 		/// <summary>
 		/// Indicates a discovery response is being sent
 		/// </summary>
-		public event EventHandler<Events.SearchRespondingEventArgs> SearchResponding;
+		public event Func<object, Events.SearchRespondingEventArgs, Task> SearchResponding;
 
 		/// <summary>
 		/// Indicates a discovery response was sent
 		/// </summary>
-		public event EventHandler SearchResponded;
+		public event Func<object, EventArgs, Task> SearchResponded;
 
 		/// <summary>
 		/// Gets the services being advertised
@@ -33,73 +33,75 @@ namespace Discovery.Ssdp.Agents
 			Services = new ServiceDescriptionCollection();
 		}
 
-		protected override async Task HandleMessage(Messages.MessageBase message, IPEndPoint sender)
+		protected override Task HandleMessageAsync(Messages.MessageBase message, IPEndPoint sender)
 		{
 			var msg = message as Messages.MessageBase;
-			if (msg == null)
-				return;
+			if (msg != null)
+			{
+				msg.Host = sender.Address.ToString();
+				msg.Port = sender.Port;
 
-			msg.Host = sender.Address.ToString();
-			msg.Port = sender.Port;
+				if (msg is Messages.DiscoveryMessage && Services.FirstOrDefault(x => x.ServiceType == msg.Service.ServiceType) != null)
+					return OnSearchReceivedAsync(new Events.SearchReceivedEventArgs((Messages.DiscoveryMessage)msg, sender));
+			}
 
-			if (msg is Messages.DiscoveryMessage && Services.FirstOrDefault(x => x.ServiceType == msg.Service.ServiceType) != null)
-				await OnSearchReceived(new Events.SearchReceivedEventArgs((Messages.DiscoveryMessage)msg, sender));
+			return Task.FromResult(0);
 		}
 
 		/// <summary>
 		/// Broadcast the presence of a service
 		/// </summary>
-		public Task Announce(int index)
+		public Task AnnounceAsync(int index)
 		{
 			var m = new Messages.AliveMessage(Services.ElementAt(index));
-			return Send(m, new IPEndPoint(DiscoveryAddress, Port));
+			return SendAsync(m, new IPEndPoint(DiscoveryAddress, Port));
 		}
 
 		/// <summary>
 		/// Broadcast the presence of all services
 		/// </summary>
-		public Task AnnounceAll()
+		public Task AnnounceAllAsync()
 		{
-			return Send(Services.Select(x => (Messages.MessageBase)new Messages.AliveMessage(x)), new IPEndPoint(DiscoveryAddress, Port));
+			return SendAsync(Services.Select(x => (Messages.MessageBase)new Messages.AliveMessage(x)), new IPEndPoint(DiscoveryAddress, Port));
 		}
 
 		/// <summary>
 		/// Broadcast the shutdown of a service
 		/// </summary>
-		public Task Bye(int index)
+		public Task ByeAsync(int index)
 		{
 			var m = new Messages.ByeMessage(Services.ElementAt(index));
-			return Send(m, new IPEndPoint(DiscoveryAddress, Port));
+			return SendAsync(m, new IPEndPoint(DiscoveryAddress, Port));
 		}
 
 		/// <summary>
 		/// Broadcast the shutdown of all services
 		/// </summary>
-		public Task ByeAll()
+		public Task ByeAllAsync()
 		{
-			return Send(Services.Select(x => (Messages.MessageBase)new Messages.ByeMessage(x)), new IPEndPoint(DiscoveryAddress, Port));
+			return SendAsync(Services.Select(x => (Messages.MessageBase)new Messages.ByeMessage(x)), new IPEndPoint(DiscoveryAddress, Port));
 		}
 
 		/// <summary>
 		/// Raise the SearchReceived event
 		/// </summary>
 		/// <param name="e">arguments for the event</param>
-		protected async Task OnSearchReceived(Events.SearchReceivedEventArgs e)
+		protected async Task OnSearchReceivedAsync(Events.SearchReceivedEventArgs e)
 		{
-			SearchReceived?.Invoke(this, e);
+			await OnEventHandlerAsync(SearchReceived, e).ConfigureAwait(false);
 
-			var content = await OnSearchResponding(new Events.SearchRespondingEventArgs(Content, e.Sender));
+			var content = await OnSearchRespondingAsync(new Events.SearchRespondingEventArgs(Content, e.Sender)).ConfigureAwait(false);
 
 			var response = new Messages.DiscoveryResponseMessage();
 			response.Service = Services.FirstOrDefault(x => x.ServiceType == e.ServiceType);
 
 			try
 			{
-				await DelaySearchResponse(e.MaxWaitTime);
+				await DelaySearchResponseAsync(e.MaxWaitTime).ConfigureAwait(false);
 				response.Content = content;
-				await Send(response, e.Sender);
+				await SendAsync(response, e.Sender).ConfigureAwait(false);
 
-				await OnSearchResponded();
+				await OnSearchRespondedAsync().ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -111,27 +113,24 @@ namespace Discovery.Ssdp.Agents
 		/// Raise the SearchResponding event
 		/// </summary>
 		/// <param name="e">arguments for the event</param>
-		protected Task<string> OnSearchResponding(Events.SearchRespondingEventArgs e)
+		protected async Task<string> OnSearchRespondingAsync(Events.SearchRespondingEventArgs e)
 		{
-			SearchResponding?.Invoke(this, e);
-
-			return Task.FromResult(e.Content);
+			await OnEventHandlerAsync(SearchResponding, e).ConfigureAwait(false);
+			return e.Content;
 		}
 
 		/// <summary>
 		/// Raise the SearchResponded event
 		/// </summary>
-		protected Task OnSearchResponded()
+		protected Task OnSearchRespondedAsync()
 		{
-			SearchResponded?.Invoke(this, EventArgs.Empty);
-
-			return Task.FromResult(0);
+			return OnEventHandlerAsync(SearchResponded, EventArgs.Empty);
 		}
 
-		private async Task DelaySearchResponse(int maxWaitTime)
+		private Task DelaySearchResponseAsync(int maxWaitTime)
 		{
 			var rnd = new Random(DateTime.Now.Second);
-			await Task.Delay(rnd.Next(maxWaitTime) * 1000);
+			return Task.Delay(rnd.Next(maxWaitTime) * 1000);
 		}
 	}
 }
